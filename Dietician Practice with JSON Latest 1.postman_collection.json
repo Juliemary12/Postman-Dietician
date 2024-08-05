@@ -1,0 +1,656 @@
+{
+	"info": {
+		"_postman_id": "9c680df0-6623-4cb5-949d-9125e33e40e3",
+		"name": "Dietician Practice with JSON Latest 1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28585143"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "User Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseData = pm.response.json();\r",
+									"pm.environment.set(\"Admintoken_env\", responseData.token);\r",
+									"//pm.environment.set(\"User_ID\", responseData.userId);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"password\": \"{{userpassword}}\",\r\n  \"userLoginEmail\": \"{{loginUserEmail}}\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base_Url}}/login",
+							"host": [
+								"{{Base_Url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lgout Dietician",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admintoken_env}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base_Url}}/logoutdietician",
+							"host": [
+								"{{Base_Url}}"
+							],
+							"path": [
+								"logoutdietician"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Dietician",
+			"item": [
+				{
+					"name": "Create Dietician",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"/*var dieticianResponse =pm.response.json();\r",
+									"pm.environment.set(\"Dietician_ID\", dieticianResponse.id);\r",
+									"pm.environment.set(\"Dietician_loginPassword\", dieticianResponse.loginPassword);*/\r",
+									"\r",
+									"// Parse the response JSON\r",
+									"try {\r",
+									"    var jsonData = JSON.parse(pm.response.text());\r",
+									"\r",
+									"    // Ensure the JSON data has an 'id' field\r",
+									"    if (jsonData.id) {\r",
+									"        pm.environment.set(\"DietID\", jsonData.id);\r",
+									"        pm.environment.set(\"DietPWD\", jsonData.loginPassword);\r",
+									"        pm.environment.set(\"DietEmail\", jsonData.Email);\r",
+									"        console.log(\"Environment variables set successfully.\");\r",
+									"    } else {\r",
+									"        console.error(\"Response JSON does not contain 'id' field:\", jsonData);\r",
+									"    }\r",
+									"} catch (e) {\r",
+									"    console.error(\"Failed to parse response JSON:\", e);\r",
+									"}\r",
+									"\r",
+									"// Validate if the id is correctly set in the environment\r",
+									"pm.test(\"Check dieticianId present in the response body\", function () {\r",
+									"    pm.expect(jsonData).to.have.property('id');\r",
+									"});\r",
+									"\r",
+									"// Validate Header\r",
+									"pm.test(\"Test Header\", function(){\r",
+									"    pm.response.to.be.header(\"Content-Type\",\"application/json\");  \r",
+									"})\r",
+									"\r",
+									"// Validate status code\r",
+									"if (pm.response.code == 201)\r",
+									"{ \r",
+									"    pm.test(\"Status code is 201\", function () {\r",
+									"      pm.response.to.have.status(201);\r",
+									"    });\r",
+									"}\r",
+									"else if(pm.response.code == 400){\r",
+									"    pm.test(\"Status code is 400\", function () {\r",
+									"      pm.response.to.have.status(400);\r",
+									"    });\r",
+									"} \r",
+									"\r",
+									"else if(pm.response.code == 401){\r",
+									"    pm.test(\"Status code is 401\", function () {\r",
+									"      pm.response.to.have.status(401);\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"else if(pm.response.code == 404){\r",
+									"    pm.test(\"Status code is 404\", function () {\r",
+									"      pm.response.to.have.status(404);\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"else if(pm.response.code == 200){\r",
+									"    pm.test(\"Status code is 200\", function () {\r",
+									"      pm.response.to.have.status(200);\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"// Validate String of status code\r",
+									"if (pm.response.code == 201)\r",
+									"{\r",
+									"    pm.test(\"Status code name has string\", function () {\r",
+									"    pm.response.to.have.status(\"Created\");\r",
+									"    });\r",
+									"}\r",
+									"else if(pm.response.code == 400){\r",
+									"    pm.test(\"Status code name has string\", function () {\r",
+									"    pm.response.to.have.status(\"Bad Request\");\r",
+									"    });\r",
+									"}\r",
+									"else if(pm.response.code == 401){\r",
+									"    pm.test(\"Status code name has string\", function () {\r",
+									"    pm.response.to.have.status(\"Unauthorized\");\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"else if(pm.response.code == 404){\r",
+									"    pm.test(\"Status code name has string\", function () {\r",
+									"    pm.response.to.have.status(\"Not Found\");\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"else if(pm.response.code == 200){\r",
+									"    pm.test(\"Status code name has string\", function () {\r",
+									"    pm.response.to.have.status(\"Ok\");\r",
+									"    });\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Access the data from the JSON file\r",
+									"//let jsonData = JSON.parse(pm.iterationData.get('JulieTest'));\r",
+									"\r",
+									"//let jsonData = pm.iterationData.toJSON();\r",
+									"\r",
+									"/*// Set an index variable to keep track of iterations\r",
+									"let index = pm.environment.get(\"index\") || 0;\r",
+									"\r",
+									"// Ensure the index is an integer\r",
+									"index = parseInt(index);\r",
+									"\r",
+									"// Loop through post_dietician array and set environment variables\r",
+									"if (jsonData.post_dietician && jsonData.post_dietician.length > index) \r",
+									"{\r",
+									"pm.environment.set(\"contact_Number\", jsonData.post_dietician[index].contact_Number || \"\");\r",
+									"pm.environment.set(\"date_Of_Birth\", jsonData.post_dietician[index].date_Of_Birth || \"\");\r",
+									"pm.environment.set(\"education\", jsonData.post_dietician[index].education || \"\");\r",
+									"pm.collectionVariables.set(\"email\", jsonData.post_dietician[index].email || \"\");\r",
+									"pm.environment.set(\"first_name\", jsonData.post_dietician[index].first_name || \"\");\r",
+									"pm.environment.set(\"hospital_City\", jsonData.post_dietician[index].hospital_City || \"\");\r",
+									"pm.environment.set(\"hospital_Name\", jsonData.post_dietician[index].hospital_Name || \"\");\r",
+									"pm.environment.set(\"hospital_Pincode\", jsonData.post_dietician[index].hospital_Pincode || \"\");\r",
+									"pm.environment.set(\"hospital_Street\", jsonData.post_dietician[index].hospital_Street || \"\");\r",
+									"pm.environment.set(\"last_name\", jsonData.post_dietician[index].last_name || \"\");\r",
+									"}\r",
+									"\r",
+									"// Increment the index for the next iteration\r",
+									"pm.environment.set(\"index\", ++index);\r",
+									"\r",
+									"console.log(\"Post Dietician Data:\", {\r",
+									"    contact_Number: pm.environment.get(\"contact_Number\"),\r",
+									"    date_Of_Birth: pm.environment.get(\"date_Of_Birth\"),\r",
+									"    education: pm.environment.get(\"education\"),\r",
+									"    email: pm.environment.get(\"email\"),\r",
+									"    first_name: pm.environment.get(\"first_name\"),\r",
+									"    hospital_City: pm.environment.get(\"hospital_City\"),\r",
+									"    hospital_Name: pm.environment.get(\"hospital_Name\"),\r",
+									"    hospital_Pincode: pm.environment.get(\"hospital_Pincode\"),\r",
+									"    hospital_Street: pm.environment.get(\"hospital_Street\"),\r",
+									"    last_name: pm.environment.get(\"last_name\")\r",
+									"});*/\r",
+									"\r",
+									"\r",
+									"if (typeof pm.variables.get('requestdata') !== 'object') \r",
+									"{\r",
+									"    pm.variables.set('requestdata', pm.iterationData.toObject());\r",
+									"}\r",
+									"const requestdata = pm.variables.get('requestdata');\r",
+									"\r",
+									"if(typeof requestdata !== 'object' || Object.keys(requestdata).length ===0) \r",
+									"{\r",
+									"    console.log(\"No external file found\")\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"const currentrequest = requestdata.requests.filter(({name}) => name === pm.info.requestName) [0];\r",
+									"if(!currentrequest){\r",
+									"    console.log(`Request ${pm.info.requestName} has no data defined.`);\r",
+									"}\r",
+									"\r",
+									"if(currentrequest){\r",
+									"    const variables = currentrequest.data.shift();\r",
+									"\r",
+									"Object.entries(variables).forEach(([key, value]) => {\r",
+									"        pm.variables.set(key, value);\r",
+									"    });\r",
+									"\r",
+									"pm.variables.set('requestdata',requestdata);\r",
+									"if(currentrequest.data.length > 0){\r",
+									"    pm.execution.setNextRequest(pm.info.requestName)\r",
+									"}\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admintoken_env}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"ContactNumber\": \"{{contact_Number}}\",\r\n  \"DateOfBirth\": \"{{date_Of_Birth}}\",\r\n  \"Education\": \"{{education}}\",\r\n  \"Email\": \"{{email}}\",\r\n  \"Firstname\": \"{{first_name}}\",\r\n  \"HospitalCity\": \"{{hospital_City}}\",\r\n  \"HospitalName\": \"{{hospital_Name}}\",\r\n  \"HospitalPincode\": \"{{hospital_Pincode}}\",\r\n  \"HospitalStreet\": \"{{hospital_Street}}\",\r\n  \"Lastname\": \"{{last_name}}\"\r\n \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base_Url}}/dietician",
+							"host": [
+								"{{Base_Url}}"
+							],
+							"path": [
+								"dietician"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Dietician",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admintoken_env}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base_Url}}/dietician",
+							"host": [
+								"{{Base_Url}}"
+							],
+							"path": [
+								"dietician"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get By Dietician ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admintoken_env}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base_Url}}/dietician/{{DietID}}",
+							"host": [
+								"{{Base_Url}}"
+							],
+							"path": [
+								"dietician",
+								"{{DietID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Dietician By ID",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"// Check if request data is already set\r",
+									"if (!pm.variables.get('requestData')) {\r",
+									"    pm.variables.set('requestData', pm.iterationData.toObject());\r",
+									"}\r",
+									"\r",
+									"const requestData = pm.variables.get('requestData');\r",
+									"\r",
+									"if (!requestData || typeof requestData !== 'object' || !requestData.requests) {\r",
+									"    console.log(\"No external file found or invalid data\");\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"let currentRequestData = requestData.requests.find(r => r.name === pm.info.requestName);\r",
+									"\r",
+									"if (!currentRequestData) {\r",
+									"    console.log(`Request ${pm.info.requestName} has no data defined.`);\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"// Initialize index if not set\r",
+									"if (!pm.variables.get('currentIndex')) {\r",
+									"    pm.variables.set('currentIndex', 0);\r",
+									"}\r",
+									"\r",
+									"let currentIndex = parseInt(pm.variables.get('currentIndex'), 10);\r",
+									"\r",
+									"if (currentRequestData.data && currentRequestData.data.length > currentIndex) {\r",
+									"    let currentData = currentRequestData.data[currentIndex];\r",
+									"    \r",
+									"    // Set variables for form-data in Create Dietician request\r",
+									"    if (pm.info.requestName === 'Create Dietician') {\r",
+									"        Object.entries(currentData).forEach(([key, value]) => {\r",
+									"            pm.variables.set(key, value);\r",
+									"        });\r",
+									"    } \r",
+									"    // Set variables for raw JSON in Update Dietician By ID request\r",
+									"    else if (pm.info.requestName === 'Update Dietician By ID') {\r",
+									"        pm.variables.set('updateData', JSON.stringify(currentData));\r",
+									"    }\r",
+									"} else {\r",
+									"    console.log(\"No more data available for this request.\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"const requestData = pm.variables.get('requestData');\r",
+									"let currentIndex = parseInt(pm.variables.get('currentIndex'), 10);\r",
+									"let currentRequestName = pm.info.requestName;\r",
+									"\r",
+									"if (requestData && requestData.requests) {\r",
+									"    let currentRequestData = requestData.requests.find(r => r.name === currentRequestName);\r",
+									"    \r",
+									"    if (currentRequestData && currentRequestData.data && currentIndex < currentRequestData.data.length-1) {\r",
+									"        // Increment the index for the next iteration\r",
+									"        pm.variables.set('currentIndex', currentIndex + 1);\r",
+									"        \r",
+									"        // Set the next request to be the same as the current request to process the next data item\r",
+									"        pm.execution.setNextRequest(currentRequestName);\r",
+									"    } else {\r",
+									"        console.log(\"All data processed for request:\", currentRequestName);\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"// Handle response validation and variable setting based on request name\r",
+									"\r",
+									"try {\r",
+									"    var jsonData = JSON.parse(pm.response.text());\r",
+									"\r",
+									"    // Ensure the JSON data has an 'id' field\r",
+									"    if (jsonData.id) {\r",
+									"        pm.environment.set(\"DietEmail\", jsonData.Email);\r",
+									"    }\r",
+									"    }catch (e) {\r",
+									"    console.error(\"Failed to parse response JSON:\", e);\r",
+									"}\r",
+									"\r",
+									"\r",
+									"\r",
+									"// Validate status codes\r",
+									"pm.test(\"Status code is 2xx\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admintoken_env}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{updateData}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base_Url}}/dietician/{{DietID}}",
+							"host": [
+								"{{Base_Url}}"
+							],
+							"path": [
+								"dietician",
+								"{{DietID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete By Dietician ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admintoken_env}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{Base_Url}}/dietician/{{DietID}}",
+							"host": [
+								"{{Base_Url}}"
+							],
+							"path": [
+								"dietician",
+								"{{DietID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Patient",
+			"item": [
+				{
+					"name": "Dietician Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(pm.response.text());\r",
+									"pm.environment.set(\"DieticianBearerToken_env\",jsonData.token);\r",
+									"\r",
+									"// Log the response\r",
+									"console.log(\"Response:\", pm.response.text());"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admin_Bearer_Token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"password\": \"{{DietPWD}}\",\r\n  \"userLoginEmail\": \"{{DietEmail}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base_Url}}/login",
+							"host": [
+								"{{Base_Url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "loginUserEmail",
+			"value": "",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "userpassword",
+			"value": "",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "User_ID",
+			"value": "",
+			"disabled": true
+		},
+		{
+			"key": "Base_Url",
+			"value": "",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "Admin_Bearer_Token",
+			"value": "",
+			"disabled": true
+		},
+		{
+			"key": "email",
+			"value": ""
+		},
+		{
+			"key": "Dietician_loginPassword",
+			"value": ""
+		},
+		{
+			"key": "Dietician_Bearer_Token",
+			"value": ""
+		},
+		{
+			"key": "Dietician_ID",
+			"value": "",
+			"disabled": true
+		}
+	]
+}
